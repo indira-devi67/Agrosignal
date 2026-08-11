@@ -1,0 +1,886 @@
+/* AgroSignal UI Design Spec V1.5 - CSS Tokens & Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-base: #1C1812;         /* page background */
+  --bg-surface: #26211A;      /* standard cards */
+  --bg-elevated: #332B1F;     /* NEW — results header sits above everything */
+  --accent-primary: #C9A227;  /* gold — ONLY: primary buttons, gauge, logo */
+  --accent-weather: #5A7A8C;  /* NEW — weather panel label/border ONLY */
+  --state-success: #5C7A4A;   /* ONLY: spray-safe banner */
+  --state-warning: #A8442F;   /* ONLY: spray-unsafe banner */
+  --text-primary: #F0EBDD;
+  --text-secondary: #A69A85;
+  --divider: #3A3327;
+  --font-sans: 'Inter', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding: 0;
+  margin: 0;
+}
+
+/* Numeric data font utility */
+.numeric {
+  font-family: var(--font-mono);
+}
+
+/* Header & Navigation */
+.app-header {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--divider);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--accent-primary);
+}
+
+.brand-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.brand-tagline {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-primary);
+  background-color: rgba(201, 162, 39, 0.1);
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid rgba(201, 162, 39, 0.25);
+  letter-spacing: 0.05em;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Language Switcher Buttons */
+.lang-toggle {
+  display: flex;
+  background-color: var(--bg-base);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.lang-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-height: 44px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lang-btn:hover {
+  color: var(--text-primary);
+  background-color: rgba(240, 235, 221, 0.05);
+}
+
+.lang-btn.active {
+  background-color: var(--accent-primary);
+  color: var(--bg-base);
+}
+
+/* Region Selector Dropdown & Button */
+.region-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.state-select {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-family: var(--font-sans);
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.state-select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.detect-loc-btn {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 8px 12px;
+  min-height: 44px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.detect-loc-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* API Key control */
+.apikey-wrapper {
+  position: relative;
+}
+
+.apikey-btn {
+  background-color: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 8px 12px;
+  min-height: 44px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.apikey-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.apikey-btn.is-configured {
+  color: var(--state-success);
+  border-color: var(--state-success);
+}
+
+.apikey-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  width: 280px;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.apikey-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.apikey-input {
+  width: 100%;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-family: var(--font-mono, monospace);
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.apikey-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.apikey-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.apikey-save-btn {
+  flex: 1;
+  background-color: var(--accent-primary);
+  color: var(--bg-base);
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  min-height: 40px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.apikey-clear-btn {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 10px 14px;
+  min-height: 40px;
+  cursor: pointer;
+}
+
+.apikey-clear-btn:hover {
+  border-color: var(--state-warning);
+  color: var(--state-warning);
+}
+
+.apikey-hint {
+  margin-top: 10px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Container & Layout — full viewport width, inner content max 1440px */
+.app-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px 32px 48px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Microclimate & Weather Bar */
+.weather-panel {
+  background-color: var(--bg-surface);
+  /* accent-weather left-border visually separates this panel from diagnosis cards */
+  border: 1px solid var(--divider);
+  border-left: 3px solid var(--accent-weather);
+  border-radius: 4px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.weather-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--divider);
+  padding-bottom: 10px;
+}
+
+.weather-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  /* accent-weather ONLY for weather section label */
+  color: var(--accent-weather);
+}
+
+.weather-location {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.weather-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.weather-metric-card {
+  background-color: var(--bg-base);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 10px 12px;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Weather Action Banner - Full-width background fill per spec */
+.spray-alert-banner {
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.spray-alert-banner.safe {
+  background-color: var(--state-success);
+  color: #FFFFFF;
+}
+
+.spray-alert-banner.unsafe {
+  background-color: var(--state-warning);
+  color: #FFFFFF;
+}
+
+/* Section Cards / Panels */
+.panel {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 24px;
+}
+
+.panel-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.panel-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* Upload Section */
+.upload-dropzone {
+  border: 2px dashed var(--divider);
+  border-radius: 4px;
+  padding: 32px 20px;
+  text-align: center;
+  background-color: var(--bg-base);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.upload-dropzone:hover, .upload-dropzone.dragover {
+  border-color: var(--accent-primary);
+}
+
+.upload-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--text-secondary);
+}
+
+.upload-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.btn-primary {
+  background-color: var(--accent-primary);
+  color: var(--bg-base);
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  min-height: 44px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.15s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 10px 18px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  min-height: 44px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-primary);
+}
+
+/* Test Samples Section */
+.sample-section {
+  margin-top: 20px;
+  border-top: 1px solid var(--divider);
+  padding-top: 16px;
+}
+
+.sample-title {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sample-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sample-chip {
+  background-color: var(--bg-base);
+  border: 1px solid var(--divider);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  min-height: 44px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sample-chip:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* Preview Thumbnail */
+.preview-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--bg-base);
+  border: 1px solid var(--divider);
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 16px;
+}
+
+/* 4. PHOTO PRESENCE — enlarged 1.5-2x, gold border anchors the real image */
+.preview-thumb {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+  /* gold border — accent-primary reserved for the one organic color element */
+  border: 1px solid var(--accent-primary);
+}
+
+/* Loading Overlay & State */
+.loading-box {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--accent-primary);
+  padding: 32px;
+  text-align: center;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(201, 162, 39, 0.2);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Single Vertical Scrolling Diagnosis Results View */
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Results Header Panel — bg-elevated lifts it visually above all other cards */
+.results-header-panel {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.results-title-group {
+  flex: 1;
+  min-width: 250px;
+}
+
+.crop-tag {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.disease-name {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.confidence-description {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Signature Element: Radial Confidence Gauge */
+.gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.gauge-svg {
+  transform: rotate(-90deg);
+  width: 120px;
+  height: 120px;
+}
+
+.gauge-bg {
+  fill: none;
+  stroke: var(--divider);
+  stroke-width: 10;
+}
+
+.gauge-fill {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s ease;
+}
+
+.gauge-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Single-Scroll Results Breakdown Sections */
+.results-section-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 20px 24px;
+}
+
+/* 2. GOLD RESTRICTION — section labels use text-secondary, not gold */
+.section-label {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-content {
+  font-size: 1rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.symptoms-list {
+  padding-left: 20px;
+  margin-top: 8px;
+}
+
+.symptoms-list li {
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+/* Explore Common Problems Section */
+.explore-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.explore-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.explore-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+.card-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-primary);
+  background-color: rgba(201, 162, 39, 0.1);
+  padding: 2px 8px;
+  border-radius: 2px;
+  width: fit-content;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.card-summary {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.card-action-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Modal View for Explore Details */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(28, 24, 18, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-content {
+  background-color: var(--bg-elevated);
+  /* modal uses divider border — gold is too common if it appears here too */
+  border: 1px solid var(--divider);
+  border-radius: 4px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--divider);
+  padding-bottom: 12px;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: 1px solid var(--divider);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  padding: 6px 12px;
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.modal-close-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+}
+
+/* Error Banner */
+.error-banner {
+  background-color: rgba(168, 68, 47, 0.15);
+  border: 1px solid var(--state-warning);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+/* Footer */
+.app-footer {
+  border-top: 1px solid var(--divider);
+  text-align: center;
+  padding: 24px 16px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  background-color: var(--bg-surface);
+  margin-top: 40px;
+}
+
+/* Not-a-plant rejection banner */
+.not-plant-banner {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--divider);
+  border-left: 4px solid var(--accent-weather);
+  border-radius: 4px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.not-plant-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--accent-weather);
+  opacity: 0.8;
+}
+
+.not-plant-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.not-plant-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  max-width: 480px;
+  line-height: 1.5;
+}
+
+/* Hidden Utility */
+.hidden {
+  display: none !important;
+}
+
+/* Responsive Rules */
+@media (max-width: 640px) {
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 16px;
+  }
+  .header-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lang-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+  .lang-btn {
+    flex: 1;
+  }
+  .app-container {
+    padding: 16px 12px 40px 12px;
+  }
+  .results-header-panel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .gauge-container {
+    align-self: center;
+  }
+}

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroSignal — Precision Agricultural Agronomist Instrument</title>
+  <meta name="description" content="AgroSignal V1.5 is a professional multilingual AI agricultural crop diagnosis instrument supporting English, Hindi, and Telugu.">
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+
+  <!-- App Header & Navigation -->
+  <header class="app-header">
+    <div class="brand-container">
+      <svg class="brand-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
+        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+      </svg>
+      <div>
+        <h1 class="brand-title" id="appTitle">AgroSignal</h1>
+        <div class="brand-tagline" id="appTagline">FIELD INSTRUMENT V1.5</div>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <!-- Language Toggle Buttons (English / Hindi / Telugu) -->
+      <div class="lang-toggle" role="group" aria-label="Language selection">
+        <button type="button" class="lang-btn active" data-lang="en" id="langBtnEn">English</button>
+        <button type="button" class="lang-btn" data-lang="hi" id="langBtnHi">हिंदी</button>
+        <button type="button" class="lang-btn" data-lang="te" id="langBtnTe">తెలుగు</button>
+      </div>
+
+      <!-- Region Selection Dropdown & Geolocation Button -->
+      <div class="region-wrapper">
+        <select id="stateSelect" class="state-select" aria-label="Select state">
+          <option value="" disabled selected id="selectStatePlaceholder">Select your state...</option>
+          <option value="Andhra Pradesh">Andhra Pradesh</option>
+          <option value="Telangana">Telangana</option>
+          <option value="Tamil Nadu">Tamil Nadu</option>
+          <option value="Karnataka">Karnataka</option>
+          <option value="Kerala">Kerala</option>
+          <option value="Maharashtra">Maharashtra</option>
+          <option value="Gujarat">Gujarat</option>
+          <option value="Rajasthan">Rajasthan</option>
+          <option value="Punjab">Punjab</option>
+          <option value="Haryana">Haryana</option>
+          <option value="Uttar Pradesh">Uttar Pradesh</option>
+          <option value="Madhya Pradesh">Madhya Pradesh</option>
+          <option value="Odisha">Odisha</option>
+          <option value="West Bengal">West Bengal</option>
+          <option value="Bihar">Bihar</option>
+          <option value="Chhattisgarh">Chhattisgarh</option>
+          <option value="Assam">Assam</option>
+        </select>
+        <button type="button" class="detect-loc-btn" id="detectLocBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span id="detectLocLabel">Detect</span>
+        </button>
+      </div>
+
+      <!-- Gemini API Key Control -->
+      <div class="apikey-wrapper">
+        <button type="button" class="apikey-btn" id="apiKeyBtn" title="Set Gemini API Key">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+          </svg>
+          <span id="apiKeyStatus">API Key</span>
+        </button>
+        <div class="apikey-popover" id="apiKeyPopover" hidden>
+          <label for="apiKeyInput" class="apikey-label">Gemini API Key</label>
+          <input type="password" id="apiKeyInput" class="apikey-input" placeholder="AIzaSy..." autocomplete="off" spellcheck="false">
+          <div class="apikey-actions">
+            <button type="button" id="apiKeySave" class="apikey-save-btn">Save</button>
+            <button type="button" id="apiKeyClear" class="apikey-clear-btn">Clear</button>
+          </div>
+          <div class="apikey-hint" id="apiKeyHint">Stored only in this browser (localStorage). Never sent anywhere but Google's API.</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="app-container">
+
+    <!-- Microclimate & Weather Bar -->
+    <section class="weather-panel" id="weatherPanel">
+      <div class="weather-header">
+        <div class="weather-title" id="weatherTitle">Microclimate & Spray Safety</div>
+        <div class="weather-location" id="weatherLocation">Select state to load weather</div>
+      </div>
+      
+      <div class="weather-metrics">
+        <div class="weather-metric-card">
+          <div class="metric-label" id="tempLabel">Temperature</div>
+          <div class="metric-value" id="tempValue">-- °C</div>
+        </div>
+        <div class="weather-metric-card">
+          <div class="metric-label" id="humidityLabel">Humidity</div>
+          <div class="metric-value" id="humidityValue">-- %</div>
+        </div>
+        <div class="weather-metric-card">
+          <div class="metric-label" id="rainLabel">Rain Risk</div>
+          <div class="metric-value" id="rainValue">-- %</div>
+        </div>
+        <div class="weather-metric-card">
+          <div class="metric-label" id="windLabel">Wind Speed</div>
+          <div class="metric-value" id="windValue">-- km/h</div>
+        </div>
+      </div>
+
+      <!-- Action Safety Alert Banner (Only full-width bg fill) -->
+      <div class="spray-alert-banner safe hidden" id="sprayAlertBanner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <span id="sprayAlertText">Weather Safe for Spraying</span>
+      </div>
+    </section>
+
+    <!-- Error Banner Area -->
+    <div id="errorBanner" class="error-banner hidden"></div>
+
+    <!-- Upload & Diagnosis Request Section -->
+    <section class="panel">
+      <h2 class="panel-title" id="uploadTitle">Crop Image Diagnosis</h2>
+      <p class="panel-subtitle" id="uploadSubtitle">Upload a clear photo of infected leaf, stem, or fruit</p>
+
+      <div class="upload-dropzone" id="dropzone">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <p id="dragDropText">Drag & drop image here or click to browse</p>
+        
+        <div class="upload-actions">
+          <input type="file" id="fileInput" accept="image/*" class="hidden">
+          <button type="button" class="btn-primary" id="chooseFileBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <span id="chooseFileLabel">Choose File</span>
+          </button>
+          
+          <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+          <button type="button" class="btn-secondary" id="takePhotoBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            <span id="takePhotoLabel">Use Camera</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview Thumbnail -->
+      <div id="previewContainer" class="preview-container hidden">
+        <img id="previewImg" class="preview-thumb" alt="Selected leaf preview">
+        <div style="flex:1;">
+          <div id="previewFileName" style="font-weight: 600; font-size: 0.95rem;">image.jpg</div>
+          <div id="previewFileSize" class="numeric" style="font-size: 0.8rem; color: var(--text-secondary);">Ready for analysis</div>
+        </div>
+        <button type="button" class="btn-primary" id="analyzeBtn">
+          <span id="analyzeBtnLabel">Diagnose Crop</span>
+        </button>
+      </div>
+
+      <!-- Test Samples Section -->
+      <div class="sample-section">
+        <div class="sample-title" id="sampleTitle">Or select a test sample leaf:</div>
+        <div class="sample-chips">
+          <button type="button" class="sample-chip" data-sample="tomato_early_blight" id="sampleHighConf">Tomato Early Blight (92%)</button>
+          <button type="button" class="sample-chip" data-sample="rice_leaf_blight" id="sampleMedConf">Rice Leaf Blight (74%)</button>
+          <button type="button" class="sample-chip" data-sample="cotton_blurred" id="sampleLowConf">Blurred Cotton Leaf (48%)</button>
+          <button type="button" class="sample-chip" data-sample="wheat_rust" id="sampleRust">Wheat Yellow Rust (88%)</button>
+          <button type="button" class="sample-chip" data-sample="corn_rust" id="sampleCorn">Corn Common Rust (68%)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading Box -->
+    <div id="loadingBox" class="loading-box hidden">
+      <div class="spinner"></div>
+      <div id="analyzingText" style="font-weight: 600; font-size: 1.1rem; color: var(--text-primary);">
+        Analyzing plant pathology features...
+      </div>
+    </div>
+
+    <!-- Not-a-plant Rejection Banner (shown only when uploaded image is not a crop) -->
+    <div id="notPlantBanner" class="not-plant-banner hidden">
+      <svg class="not-plant-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <div class="not-plant-title" id="notPlantTitle">This doesn't look like a crop photo</div>
+      <div class="not-plant-subtitle" id="notPlantSubtitle">Please upload a clear, close-up photo of the affected leaf, stem, or fruit. Photos of people, objects, or anything unrelated to agriculture cannot be diagnosed.</div>
+      <button type="button" class="btn-primary" id="notPlantRetryBtn" onclick="window.agroApp.resetAnalysis()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+        </svg>
+        <span id="notPlantRetryLabel">Try Again</span>
+      </button>
+    </div>
+
+    <!-- Single Vertical-Scrolling Diagnosis Results View (NO Carousel, NO Swipe Dots) -->
+    <section id="resultsContainer" class="results-container hidden">
+      
+      <!-- 1. Header & Crop/Disease Name -->
+      <div class="results-header-panel">
+        <div class="results-title-group">
+          <div class="crop-tag" id="resCropName">TROPICAL CROP</div>
+          <h2 class="disease-name" id="resDiseaseName">Pathology Result</h2>
+          <div class="confidence-description" id="resConfidenceDesc">Diagnosis Confidence</div>
+        </div>
+
+        <!-- 2. Signature Element: SVG Radial Confidence Gauge -->
+        <div class="gauge-container">
+          <svg class="gauge-svg" viewBox="0 0 100 100">
+            <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+            <circle class="gauge-fill" id="gaugeCircle" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+          </svg>
+          <div class="gauge-text numeric" id="gaugeValue">0%</div>
+        </div>
+      </div>
+
+      <!-- Low Confidence Alert Warning (if confidence < 60%) -->
+      <div id="lowConfidenceAlert" class="error-banner hidden" style="border-color: var(--accent-primary); background-color: rgba(201, 162, 39, 0.1);">
+        <strong id="lowConfTitle">Possible Issue Detected</strong> — <span id="lowConfText">Image resolution is low. Capture close-up photo in bright daylight for higher certainty.</span>
+      </div>
+
+      <!-- 3. Observed Symptoms -->
+      <div class="results-section-card">
+        <div class="section-label" id="symptomsLabel">Observed Symptoms</div>
+        <div class="section-content">
+          <ul class="symptoms-list" id="resSymptomsList"></ul>
+        </div>
+      </div>
+
+      <!-- 4. Immediate Recommended Action -->
+      <div class="results-section-card" style="border-left: 4px solid var(--accent-primary);">
+        <div class="section-label" id="immediateActionLabel">Immediate Recommended Action</div>
+        <div class="section-content" id="resImmediateAction" style="font-weight: 600; color: var(--text-primary);"></div>
+      </div>
+
+      <!-- 5. Agronomic Rationale (Why This Recommendation) -->
+      <div class="results-section-card">
+        <div class="section-label" id="whyRecommendationLabel">Agronomic Rationale & Cause</div>
+        <div class="section-content" id="resWhyRecommendation"></div>
+      </div>
+
+      <!-- 6. Weather Impact -->
+      <div class="results-section-card">
+        <div class="section-label" id="weatherImpactLabel">Weather & Environmental Impact</div>
+        <div class="section-content" id="resWeatherImpact"></div>
+      </div>
+
+      <!-- 7. Future Risk Assessment -->
+      <div class="results-section-card">
+        <div class="section-label" id="futureRiskLabel">Future Risk Assessment</div>
+        <div class="section-content" id="resFutureRisk"></div>
+      </div>
+
+      <!-- 8. Prevention Advice -->
+      <div class="results-section-card">
+        <div class="section-label" id="preventionLabel">Long-Term Prevention Strategy</div>
+        <div class="section-content" id="resPrevention"></div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end;">
+        <button type="button" class="btn-secondary" id="resetBtn">
+          <span id="resetBtnLabel">Reset Analysis</span>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- Explore Common Agricultural Problems Section -->
+    <section class="panel">
+      <h2 class="panel-title" id="exploreTitle">Explore Common Agricultural Problems</h2>
+      <p class="panel-subtitle" id="exploreSubtitle">Select any issue to view symptoms, causes, and immediate treatment guidance</p>
+
+      <!-- Primary 5 Cards Grid -->
+      <div class="explore-grid" id="exploreGrid"></div>
+
+      <h3 style="margin-top: 32px; font-size: 1.1rem; color: var(--text-primary); font-weight: 600;" id="exploreMoreTitle">Additional Agricultural Challenges</h3>
+      
+      <!-- Additional Issues Grid -->
+      <div class="explore-grid" id="exploreMoreGrid"></div>
+    </section>
+
+  </main>
+
+  <!-- Modal View for Explore Issue Details -->
+  <div class="modal-overlay hidden" id="exploreModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <span class="card-tag" id="modalTag">Pathology</span>
+          <h2 id="modalTitle" style="font-size: 1.4rem; color: var(--text-primary); margin-top: 4px;">Issue Details</h2>
+        </div>
+        <button type="button" class="modal-close-btn" id="closeModalBtn">Close</button>
+      </div>
+
+      <div>
+        <div class="section-label">Summary</div>
+        <div id="modalSummary" style="color: var(--text-primary); margin-bottom: 12px;"></div>
+
+        <div class="section-label">Symptoms</div>
+        <div id="modalSymptoms" style="color: var(--text-primary); margin-bottom: 12px;"></div>
+
+        <div class="section-label">Underlying Causes</div>
+        <div id="modalCauses" style="color: var(--text-primary); margin-bottom: 12px;"></div>
+
+        <div class="section-label">Prevention & Treatment</div>
+        <div id="modalPrevention" style="color: var(--text-primary);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer" id="appFooter">
+    AgroSignal Precision Platform • V1.5 Field Prototype
+  </footer>
+
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>
